@@ -216,6 +216,18 @@ async def _existing_state(
         marks = state.parse_finding_marks(comments)
     except Exception:  # noqa: BLE001
         marks = []
+        comments = []
+    # Threads already carrying our "confirmed fixed" reply count as resolved
+    # (without a PAT we cannot resolve threads via GraphQL; don't re-reply
+    # on every run).
+    replied_fixed = {
+        c.get("in_reply_to_id")
+        for c in comments
+        if (c.get("body") or "").strip() == "✅ confirmed fixed" and c.get("in_reply_to_id")
+    }
+    for m in marks:
+        if m.comment_id in replied_fixed:
+            m.thread_resolved = True
     unresolved: set[str] = set()
     try:
         threads = await gh.fetch_review_threads(repo, pr)
