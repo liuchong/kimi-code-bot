@@ -147,6 +147,12 @@ async def run_review(
     if not incremental_note:
         current_fps = set(meta.fingerprints)
         fixed = [m for m in marks if m.fingerprint not in current_fps and not m.thread_resolved]
+        if fixed and not (inline or cross_cutting):
+            # Zero confirmed findings with open marks is almost always an analysis
+            # anomaly (unreadable workspace, model outage...). Fail open: skip
+            # resolving rather than mass-marking findings as fixed.
+            logger.warning("skipping resolve: 0 confirmed findings but %d marks would resolve", len(fixed))
+            fixed = []
         seen_comments: set[int] = set()
         for m in fixed:
             if m.comment_id in seen_comments:

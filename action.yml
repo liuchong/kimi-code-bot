@@ -39,6 +39,22 @@ runs:
           uv tool install kimi-bot
         fi
 
+    # Comment events (issue_comment / pull_request_review_comment) check out the
+    # DEFAULT branch by default — the review agent would find no PR files and
+    # report nothing. Fetch and check out the PR head first.
+    - name: Checkout PR head for comment events
+      if: github.event_name != 'pull_request'
+      shell: bash
+      env:
+        GH_TOKEN: ${{ inputs.github-token }}
+      run: |
+        set -e
+        PR=$(jq -r '.issue.number // .pull_request.number // empty' "$GITHUB_EVENT_PATH")
+        SHA=$(gh api "repos/${{ github.repository }}/pulls/$PR" --jq .head.sha)
+        echo "checking out PR #$PR head $SHA"
+        git fetch origin "$SHA" --depth=1
+        git checkout "$SHA"
+
     # LLM credentials (KIMI_API_KEY / KIMI_BASE_URL / KIMI_MODEL_NAME) are read from
     # job-level env by kimi-cli itself; nothing to forward here.
     - name: Dispatch
