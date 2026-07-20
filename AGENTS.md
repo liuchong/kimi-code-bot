@@ -46,6 +46,17 @@ leak kimi_cli types upward.
 - Budget rule: `max_steps = max_tool_calls + 2` (wrap-up headroom).
 - Generated system prompts must not contain `${` or `{%` (kimi-cli Jinja syntax).
 
+## Known directions
+
+- **kimi-code backend (not yet)**: Moonshot's next-gen TypeScript CLI
+  (`MoonshotAI/kimi-code`, pre-1.0) will eventually supersede Python kimi-cli.
+  When it hits 1.0 (stable stream-json schema) or kimi-cli is deprecated, add a
+  `KimiCodeBackend` (subprocess + stream-json) next to `KimiBackend` in
+  `agent.py`, switchable via config. The orchestration layer must stay
+  backend-agnostic — that is why the agent.py boundary rule exists.
+- **develop mode**: hoverstare's M11 (issue/PR -> AI coding, write tools, push
+  branches). kimi-code's goal mode may be a good fit when the time comes.
+
 ## Dev
 
 ```bash
