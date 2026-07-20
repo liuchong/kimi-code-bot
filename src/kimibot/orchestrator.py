@@ -141,17 +141,27 @@ async def run_review(
             return 1
 
     # --- resolve fixed threads
-    current_fps = set(meta.fingerprints)
-    fixed = [m for m in marks if m.fingerprint not in current_fps and not m.thread_resolved]
-    for m in fixed:
-        ok = False
-        if m.thread_id:
-            ok = await gh.resolve_review_thread(m.thread_id)
-        if not ok:
-            try:
-                await gh.create_reply(repo, pr_number, m.comment_id, "✅ confirmed fixed")
-            except Exception:  # noqa: BLE001
-                logger.warning("failed to mark finding %s as fixed", m.fingerprint)
+    # Only meaningful in FULL mode: in incremental mode "not re-reported" just
+    # means "outside the delta scope", not "fixed". Dedupe by comment_id —
+    # same-anchor merged comments carry multiple markers but one thread.
+    if not incremental_note:
+        current_fps = set(meta.fingerprints)
+        fixed = [m for m in marks if m.fingerprint not in current_fps and not m.thread_resolved]
+        seen_comments: set[int] = set()
+        for m in fixed:
+            if m.comment_id in seen_comments:
+                continue
+            seen_comments.add(m.comment_id)
+            ok = False
+            if m.thread_id:
+                ok = await gh.resolve_review_thread(m.thread_id)
+            if not ok:
+                try:
+                    await gh.create_reply(repo, pr_number, m.comment_id, "✅ confirmed fixed")
+                except Exception:  # noqa: BLE001
+                    logger.warning("failed to mark finding %s as fixed", m.fingerprint)
+    else:
+        fixed = []
 
     # --- status checks
     if cfg.status_checks:
