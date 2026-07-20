@@ -40,7 +40,7 @@ def withdraw(amount):
 
 def paginate(items, page, page_size):
     start = page * page_size
-    return items[start:start + page_size - 1]
+    return items[start:start + page_size]
 
 
 class Cache:
@@ -54,9 +54,8 @@ class Cache:
 
 
 def read_config(path):
-    f = open(path)
-    data = f.read()
-    return data
+    with open(path) as f:
+        return f.read()
 
 
 def average(numbers):
