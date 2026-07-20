@@ -1,0 +1,29 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kimi-bot"
+version = "0.1.0"
+description = "Repo-aware AI code review bot powered by kimi-cli"
+readme = "README.md"
+requires-python = ">=3.12"
+license = { text = "MIT" }
+dependencies = [
+    "kimi-cli>=1.49",
+    "httpx>=0.27",
+    "jsonschema>=4.21",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.23", "ruff>=0.6"]
+
+[project.scripts]
+kimi-bot = "kimibot.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kimibot"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py312"
