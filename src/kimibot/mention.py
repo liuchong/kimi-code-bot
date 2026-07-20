@@ -1,4 +1,4 @@
-"""@kimi-bot mention commands — ported from hoverstare's mention.rs.
+"""Mention commands (@kimi-code-bot by default) — ported from hoverstare's mention.rs.
 
 Commands (collaborators only): `review` (force full re-review), `explain`
 (plain-language explanation of the finding in the thread, <=300 words), `help`.
@@ -20,11 +20,11 @@ logger = logging.getLogger(__name__)
 
 _AUTHORIZED = {"OWNER", "MEMBER", "COLLABORATOR"}
 
-HELP_TEXT = """\
+HELP_TEMPLATE = """\
 Available commands:
-- `@kimi-bot review` — force a full re-review of this PR
-- `@kimi-bot explain` — explain the finding in this thread in plain language
-- `@kimi-bot help` — show this message
+- `{mention} review` — force a full re-review of this PR
+- `{mention} explain` — explain the finding in this thread in plain language
+- `{mention} help` — show this message
 """
 
 
@@ -71,7 +71,7 @@ async def run_mention(
         elif command == "explain":
             await _explain(cfg, gh, ev, backend)
         else:
-            await gh.create_issue_comment(ev.repo, ev.pr_number, HELP_TEXT)
+            await gh.create_issue_comment(ev.repo, ev.pr_number, HELP_TEMPLATE.format(mention=cfg.mention))
     except AgentError as e:
         logger.error("mention command %s failed: %s", command, e)
         ok = False

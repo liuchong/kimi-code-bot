@@ -37,6 +37,9 @@ class Config:
     fail_closed: bool = False
     status_checks: bool = True
     language: str = "en"
+    # mention trigger for @commands (default avoids collision with the
+    # existing GitHub user @kimi-bot)
+    mention: str = "@kimi-code-bot"
     # repo instruction files loaded from the BASE branch (prompt augmentation)
     instructions: list[str] = field(default_factory=lambda: ["AGENTS.md"])
 
@@ -64,6 +67,7 @@ _ENV_TOML_KEYS = {
     "fail_closed": "KIMIBOT_FAIL_CLOSED",
     "status_checks": "KIMIBOT_STATUS_CHECKS",
     "language": "KIMIBOT_LANGUAGE",
+    "mention": "KIMIBOT_MENTION",
 }
 
 _BOOL_KEYS = {"verify", "review_drafts", "fail_closed", "status_checks"}

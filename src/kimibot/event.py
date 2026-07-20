@@ -2,7 +2,8 @@
 
 Reads the JSON payload at ``cfg.event_path`` and classifies it:
 - pull_request (opened/reopened/synchronize) -> ReviewTarget
-- issue_comment / pull_request_review_comment containing "@kimi-bot" -> MentionEvent
+- issue_comment / pull_request_review_comment containing the mention trigger
+  (default "@kimi-code-bot", configurable) -> MentionEvent
 - anything else -> None
 
 CLI explicit --repo/--pr runs construct ReviewTarget directly in cli.py and
@@ -18,13 +19,13 @@ from typing import Any
 from .config import Config
 from .types import MentionEvent, ReviewTarget
 
-MENTION = "@kimi-bot"
 REVIEW_ACTIONS = {"opened", "reopened", "synchronize"}
 
 
 def parse_event(
     cfg: Config, env: dict | None = None
 ) -> ReviewTarget | MentionEvent | None:
+    mention = cfg.mention
     env = os.environ if env is None else env
     if cfg.event_path is None:
         return None
@@ -39,7 +40,7 @@ def parse_event(
 
     comment = payload.get("comment")
     if isinstance(comment, dict):
-        return _parse_mention(payload, comment, repo)
+        return _parse_mention(payload, comment, repo, mention)
 
     pr = payload.get("pull_request")
     if isinstance(pr, dict):
@@ -51,13 +52,13 @@ def parse_event(
 
 
 def _parse_mention(
-    payload: dict[str, Any], comment: dict[str, Any], repo: str
+    payload: dict[str, Any], comment: dict[str, Any], repo: str, mention: str
 ) -> MentionEvent | None:
     body = comment.get("body") or ""
-    if MENTION not in body:
+    if mention not in body:
         return None
     # the command part is whatever follows the mention
-    command = body.split(MENTION, 1)[1].strip()
+    command = body.split(mention, 1)[1].strip()
     author = (comment.get("user") or {}).get("login", "")
     association = comment.get("author_association", "")
 

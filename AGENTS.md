@@ -27,7 +27,7 @@ leak kimi_cli types upward.
 | `pipeline.py` | multi-pass lenses -> cluster (Jaccard, CJK n-gram) -> vote >=2 -> verifier |
 | `report.py` | anchor chain Exact->Snapped->BodySection, same-anchor merge, render |
 | `orchestrator.py` | full review flow; incremental; resolve fixed; status checks |
-| `mention.py` | @kimi-bot review/explain/help (collaborators only, reactions) |
+| `mention.py` | @kimi-code-bot review/explain/help (collaborators only, reactions) |
 | `cli.py` | `kimi-bot review|mention`; bare invocation = event dispatch |
 
 ## Invariants

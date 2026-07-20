@@ -17,7 +17,7 @@ this repo is a thin orchestration layer (a Python port of
 - ⏩ **Incremental review** on `synchronize`: only the delta since the last review is re-analyzed
 - ✅ **Auto-resolve** fixed threads; `✅ confirmed fixed` fallback without a PAT
 - 🏷 **Status checks**: `kimi-bot` / `kimi-bot-findings`
-- 🗣 `@kimi-bot review|explain|help` commands (collaborators only)
+- 🗣 `@kimi-code-bot review|explain|help` commands (collaborators only)
 - 🛡 **Fail-open**: analysis failures never redden your CI (exit 0); config errors and publish failures exit 1
 
 ## Usage (GitHub Action)
@@ -69,6 +69,7 @@ review_drafts = false
 fail_closed = false                    # true: analysis failures exit 1
 status_checks = true
 language = "en"                        # en | zh
+mention = "@kimi-code-bot"             # @command trigger (avoid collisions with real users)
 instructions = ["AGENTS.md"]           # loaded from the BASE branch
 ```
 

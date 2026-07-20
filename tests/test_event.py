@@ -63,7 +63,7 @@ def test_issue_comment_mention_on_pr(tmp_path):
             "issue": {"number": 12, "pull_request": {"url": "..."}},
             "comment": {
                 "id": 900,
-                "body": "please @kimi-bot review this",
+                "body": "please @kimi-code-bot review this",
                 "author_association": "MEMBER",
                 "user": {"login": "alice"},
             },
@@ -89,7 +89,7 @@ def test_issue_comment_on_pure_issue_ignored(tmp_path):
             "issue": {"number": 12},  # no pull_request key => pure issue
             "comment": {
                 "id": 900,
-                "body": "@kimi-bot review",
+                "body": "@kimi-code-bot review",
                 "author_association": "MEMBER",
                 "user": {"login": "alice"},
             },
@@ -126,7 +126,7 @@ def test_review_comment_mention(tmp_path):
             "pull_request": {"number": 33},
             "comment": {
                 "id": 901,
-                "body": "@kimi-bot explain",
+                "body": "@kimi-code-bot explain",
                 "author_association": "OWNER",
                 "user": {"login": "bob"},
                 "path": "src/main.py",
