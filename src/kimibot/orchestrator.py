@@ -19,6 +19,7 @@ config errors and publish double-failures exit 1.
 from __future__ import annotations
 
 import logging
+import re
 from pathlib import Path
 
 from . import diff as diff_mod
@@ -105,6 +106,11 @@ async def run_review(
         result.confirmed, full_files, cfg.severity_threshold
     )
     _assign_fingerprints(inline + cross_cutting + nitpicks, cfg.workspace)
+    # Deterministic dedupe: never re-post a finding that already has an open
+    # thread (the model is told not to re-report, but don't rely on that).
+    inline = _filter_already_open(inline, marks)
+    cross_cutting = _filter_already_open(cross_cutting, marks)
+    nitpicks = _filter_already_open(nitpicks, marks)
 
     meta = ReviewMeta(
         head_sha=pr.head_sha,
@@ -250,3 +256,46 @@ def _assign_fingerprints(findings: list[Finding], workspace: Path) -> None:
         except OSError:
             pass
         f.fingerprint = state.fingerprint(f.path, line_content, f.title)
+
+
+_MARK_TITLE_RE = re.compile(r"\*\*(?:CRITICAL|HIGH|MEDIUM|LOW)\*\*:\s*(.+)")
+
+
+def _mark_title(body: str) -> str:
+    m = _MARK_TITLE_RE.search(body)
+    return m.group(1).strip() if m else ""
+
+
+def _filter_already_open(findings: list[Finding], marks: list) -> list[Finding]:
+    """Drop findings that already have an open thread (fingerprint match, or
+    same path + line within snap distance + similar title)."""
+    from .pipeline import (
+        CLUSTER_LINE_DISTANCE,
+        CLUSTER_TITLE_JACCARD,
+        _jaccard,
+        _title_tokens,
+    )
+
+    open_marks = [m for m in marks if not m.thread_resolved]
+    if not open_marks:
+        return findings
+    open_fps = {m.fingerprint for m in open_marks}
+
+    kept: list[Finding] = []
+    for f in findings:
+        if f.fingerprint in open_fps:
+            continue
+        f_tokens = _title_tokens(f.title)
+        f_line = f.anchored_line or f.line
+        duplicate = any(
+            m.path == f.path
+            and m.line is not None
+            and abs(m.line - f_line) <= CLUSTER_LINE_DISTANCE
+            and _jaccard(f_tokens, _title_tokens(_mark_title(m.body))) >= CLUSTER_TITLE_JACCARD
+            for m in open_marks
+        )
+        if not duplicate:
+            kept.append(f)
+    if len(kept) != len(findings):
+        logger.info("dedupe: dropped %d already-open finding(s)", len(findings) - len(kept))
+    return kept
