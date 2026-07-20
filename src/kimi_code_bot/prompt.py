@@ -268,9 +268,9 @@ def reformat_prompt(raw_output: str, language: str) -> str:
 
 
 def explain_prompt(context: str, language: str) -> tuple[str, str]:
-    """@kimi-bot explain: plain-language explanation of a finding thread (<= 300 words)."""
+    """@kimi-code-bot explain: plain-language explanation of a finding thread (<= 300 words)."""
     system = (
-        "You are kimi-bot, a code-review assistant. Explain the code-review finding in the "
+        "You are kimi-code-bot, a code-review assistant. Explain the code-review finding in the "
         "user message to the PR author in plain, friendly language: what the problem is, why "
         "it matters, how it can be triggered, and how to fix it. Avoid jargon; when a "
         "technical term is necessary, explain it briefly. Keep the whole answer within 300 "

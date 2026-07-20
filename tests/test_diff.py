@@ -1,6 +1,6 @@
-"""Tests for kimibot.diff (ported from diff.rs tests + Python-specific API)."""
+"""Tests for kimi_code_bot.diff (ported from diff.rs tests + Python-specific API)."""
 
-from kimibot.diff import (
+from kimi_code_bot.diff import (
     filter_ignored,
     parse_diff,
     render_diff,

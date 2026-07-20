@@ -55,7 +55,7 @@ class GitHubClient:
                 "Authorization": f"Bearer {token}",
                 "Accept": "application/vnd.github+json",
                 "X-GitHub-Api-Version": API_VERSION,
-                "User-Agent": "kimi-bot/0.1.0",
+                "User-Agent": "kimi-code-bot/0.1.0",
             },
         )
 

@@ -5,4 +5,4 @@ dist/
 build/
 .pytest_cache/
 .ruff_cache/
-.kimi-bot/
+.kimi-code-bot/

@@ -6,9 +6,9 @@ import json
 
 import pytest
 
-from kimibot import pipeline
-from kimibot.config import Config
-from kimibot.types import AgentError, DiffFile, DiffHunk, ReviewRun
+from kimi_code_bot import pipeline
+from kimi_code_bot.config import Config
+from kimi_code_bot.types import AgentError, DiffFile, DiffHunk, ReviewRun
 
 
 class FakeBackend:
@@ -155,7 +155,7 @@ async def test_small_diff_degrades_to_single_pass():
 
 
 def test_cluster_merges_same_issue_across_lenses():
-    from kimibot.types import Finding
+    from kimi_code_bot.types import Finding
 
     a = Finding(path="a.py", line=10, severity="high", title="空指针解引用", description="x")
     b = Finding(path="a.py", line=12, severity="high", title="空指针解引用问题", description="y")

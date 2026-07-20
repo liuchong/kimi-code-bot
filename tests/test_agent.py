@@ -2,24 +2,24 @@
 
 import pytest
 
-from kimibot.agent import _prepare_agent_dir, make_budget
-from kimibot.types import AgentError
+from kimi_code_bot.agent import _prepare_agent_dir, make_budget
+from kimi_code_bot.types import AgentError
 
 
 def test_prepare_agent_dir_with_tools(tmp_path):
-    yaml_path = _prepare_agent_dir(tmp_path, "kimi-bot-reviewer", "You review code.", True)
+    yaml_path = _prepare_agent_dir(tmp_path, "kimi-code-bot-reviewer", "You review code.", True)
     text = yaml_path.read_text()
     assert "kimi_cli.tools.file:ReadFile" in text
     assert "kimi_cli.tools.file:Grep" in text
     assert "kimi_cli.tools.file:Glob" in text
     assert "kimi_cli.tools.shell:Shell" in text
     assert "WriteFile" not in text
-    assert "system_prompt_path: ./kimi-bot-reviewer.system.md" in text
-    assert (tmp_path / ".kimi-bot" / "kimi-bot-reviewer.system.md").read_text() == "You review code."
+    assert "system_prompt_path: ./kimi-code-bot-reviewer.system.md" in text
+    assert (tmp_path / ".kimi-code-bot" / "kimi-code-bot-reviewer.system.md").read_text() == "You review code."
 
 
 def test_prepare_agent_dir_no_tools(tmp_path):
-    yaml_path = _prepare_agent_dir(tmp_path, "kimi-bot-reformat", "Reformat.", False)
+    yaml_path = _prepare_agent_dir(tmp_path, "kimi-code-bot-reformat", "Reformat.", False)
     assert "tools: []" in yaml_path.read_text()
 
 

@@ -1,13 +1,17 @@
-# kimi-bot
+# kimi-code-bot
 
 Repo-aware AI code review bot, powered by [kimi-cli](https://github.com/MoonshotAI/kimi-cli).
 
-Instead of dumping a diff into a model, kimi-bot lets the review agent **browse the
+Instead of dumping a diff into a model, kimi-code-bot lets the review agent **browse the
 repository like a human reviewer** (read-only tools provided by kimi-cli), then
 suppresses false positives with **multi-pass parallel review + cluster voting + an
 independent verifier**. All LLM/agent-loop concerns are delegated to kimi-cli —
 this repo is a thin orchestration layer (a Python port of
 [hoverstare](https://github.com/liuchong/hoverstare)'s architecture, minus rig).
+
+> 💡 Like this project? Also check out [hoverstare](https://github.com/liuchong/hoverstare) —
+> the original Rust implementation of the same architecture (powered by rig
+> instead of kimi-cli), with a self-hosted serve mode and an agent develop mode.
 
 ## Features
 
@@ -16,14 +20,14 @@ this repo is a thin orchestration layer (a Python port of
 - 💬 **Inline review comments** with severity (🔴🟠🟡🔵), `suggestion` blocks, and drift-immune fingerprints
 - ⏩ **Incremental review** on `synchronize`: only the delta since the last review is re-analyzed
 - ✅ **Auto-resolve** fixed threads; `✅ confirmed fixed` fallback without a PAT
-- 🏷 **Status checks**: `kimi-bot` / `kimi-bot-findings`
+- 🏷 **Status checks**: `kimi-code-bot` / `kimi-code-bot-findings`
 - 🗣 `@kimi-code-bot review|explain|help` commands (collaborators only)
 - 🛡 **Fail-open**: analysis failures never redden your CI (exit 0); config errors and publish failures exit 1
 
 ## Usage (GitHub Action)
 
 ```yaml
-name: kimi-bot
+name: kimi-code-bot
 on:
   pull_request: { types: [opened, reopened, synchronize] }
   issue_comment: { types: [created] }
@@ -43,7 +47,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - uses: liuchong/kimi-bot@v1
+      - uses: liuchong/kimi-code-bot@v0.0.1
         with:
           github-token: ${{ secrets.GITHUB_TOKEN }}
 ```
@@ -53,7 +57,7 @@ LLM credentials belong to kimi-cli: set `KIMI_API_KEY` (+ optional `KIMI_BASE_UR
 
 ## Configuration
 
-`.github/kimi-bot.toml` in the reviewed repo (all fields optional):
+`.github/kimi-code-bot.toml` in the reviewed repo (all fields optional):
 
 ```toml
 model = "kimi-for-coding"              # kimi-cli model alias
@@ -78,9 +82,9 @@ Every field can be overridden with a `KIMIBOT_*` env var (env > toml > defaults)
 ## Local CLI
 
 ```bash
-uv tool install kimi-bot
+uv tool install kimi-code-bot
 export GITHUB_TOKEN=... KIMI_API_KEY=...
-kimi-bot review --repo owner/name --pr 123 [--full] [--dry-run]
+kimi-code-bot review --repo owner/name --pr 123 [--full] [--dry-run]
 ```
 
 ## Development
@@ -92,3 +96,7 @@ uv run pytest
 
 Layout: `agent.py` is the **only** module allowed to import `kimi_cli` (the backend
 switch point); everything else is framework-agnostic orchestration.
+
+## License
+
+[Apache-2.0](LICENSE)

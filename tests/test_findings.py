@@ -1,6 +1,6 @@
-"""Tests for kimibot.findings (three-level extraction + normalization)."""
+"""Tests for kimi_code_bot.findings (three-level extraction + normalization)."""
 
-from kimibot.findings import FINDINGS_SCHEMA, extract_json, parse_findings
+from kimi_code_bot.findings import FINDINGS_SCHEMA, extract_json, parse_findings
 
 
 def test_schema_is_dict():

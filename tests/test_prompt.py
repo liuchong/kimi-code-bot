@@ -1,7 +1,7 @@
-"""Tests for kimibot.prompt."""
+"""Tests for kimi_code_bot.prompt."""
 
-from kimibot import prompt
-from kimibot.types import DiffFile, DiffHunk, Finding
+from kimi_code_bot import prompt
+from kimi_code_bot.types import DiffFile, DiffHunk, Finding
 
 
 def _file(path="src/a.py"):

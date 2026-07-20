@@ -1,4 +1,4 @@
-# kimi-bot — AGENTS.md
+# kimi-code-bot — AGENTS.md
 
 Repo-aware AI code review bot powered by kimi-cli (library API). Python port of
 hoverstare's architecture (../bugbot, Rust/rig), minus rig — all LLM/agent-loop
@@ -6,7 +6,7 @@ concerns are delegated to kimi-cli.
 
 ## Architecture rule (the one that matters)
 
-**`src/kimibot/agent.py` is the ONLY module allowed to `import kimi_cli`** (and
+**`src/kimi_code_bot/agent.py` is the ONLY module allowed to `import kimi_cli`** (and
 `kaos`/`kosong`). Everything else talks to the framework-agnostic `ReviewBackend`
 protocol (`types.py`). If you need a new LLM capability, extend `agent.py`, never
 leak kimi_cli types upward.
@@ -16,7 +16,7 @@ leak kimi_cli types upward.
 | module | role |
 |---|---|
 | `types.py` | shared dataclasses + ReviewBackend protocol (dependency-free) |
-| `config.py` | env > `.github/kimi-bot.toml` > defaults; `ConfigError` => exit 1 |
+| `config.py` | env > `.github/kimi-code-bot.toml` > defaults; `ConfigError` => exit 1 |
 | `event.py` | GITHUB_EVENT_PATH -> ReviewTarget / MentionEvent |
 | `github.py` | httpx REST + GraphQL client (retry/backoff; GraphQL errors are HTTP 200 + errors field) |
 | `diff.py` | unified diff parser, ignore filter, truncation, commentable lines, snap |
@@ -28,7 +28,7 @@ leak kimi_cli types upward.
 | `report.py` | anchor chain Exact->Snapped->BodySection, same-anchor merge, render |
 | `orchestrator.py` | full review flow; incremental; resolve fixed; status checks |
 | `mention.py` | @kimi-code-bot review/explain/help (collaborators only, reactions) |
-| `cli.py` | `kimi-bot review|mention`; bare invocation = event dispatch |
+| `cli.py` | `kimi-code-bot review|mention`; bare invocation = event dispatch |
 
 ## Invariants
 
@@ -41,8 +41,8 @@ leak kimi_cli types upward.
   contract asks the model to verify each open finding against current code).
   "Not re-reported" never implies "fixed" (may be out of scope). Replies are
   deduped by comment_id (same-anchor merged comments carry multiple markers).
-- Machine-readable content (JSON schema, `<!-- kimi-bot-finding:* -->`,
-  `<!-- kimi-bot-meta ... -->`) is NEVER localized.
+- Machine-readable content (JSON schema, `<!-- kimi-code-bot-finding:* -->`,
+  `<!-- kimi-code-bot-meta ... -->`) is NEVER localized.
 - Budget rule: `max_steps = max_tool_calls + 2` (wrap-up headroom).
 - Generated system prompts must not contain `${` or `{%` (kimi-cli Jinja syntax).
 

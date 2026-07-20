@@ -171,7 +171,7 @@ def build_inline_comments(inline: list[Finding], language: str) -> list[InlineCo
 
 def _render_meta(meta: ReviewMeta) -> str:
     lines = [
-        "<!-- kimi-bot-meta",
+        "<!-- kimi-code-bot-meta",
         f"mode: {meta.mode}",
         f"head_sha: {meta.head_sha}",
         f"files_reviewed: {meta.files_reviewed}",
@@ -198,7 +198,7 @@ def render_body(
     `stats` may carry "threshold" (rendered in the stats line) plus any extra
     key/values, rendered verbatim in the footer.
     """
-    b = "## 🤖 kimi-bot Review\n\n"
+    b = "## 🤖 kimi-code-bot Review\n\n"
     b += (
         f"**{_scope_heading(language)}** — {_scope_label(meta, language)}; "
         f"{_files_count(meta.files_reviewed, language)}\n\n"

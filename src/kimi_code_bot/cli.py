@@ -1,4 +1,4 @@
-"""CLI entry: `kimi-bot review|mention`, or event dispatch from GitHub Actions env."""
+"""CLI entry: `kimi-code-bot review|mention`, or event dispatch from GitHub Actions env."""
 
 from __future__ import annotations
 
@@ -16,7 +16,7 @@ logger = logging.getLogger(__name__)
 
 
 def _build_parser() -> argparse.ArgumentParser:
-    p = argparse.ArgumentParser(prog="kimi-bot", description="AI code review bot powered by kimi-cli")
+    p = argparse.ArgumentParser(prog="kimi-code-bot", description="AI code review bot powered by kimi-cli")
     p.add_argument("--verbose", "-v", action="store_true")
     sub = p.add_subparsers(dest="command")
 
@@ -26,7 +26,7 @@ def _build_parser() -> argparse.ArgumentParser:
     r.add_argument("--full", action="store_true", help="force full review (skip incremental)")
     r.add_argument("--dry-run", action="store_true", help="print review instead of posting")
 
-    sub.add_parser("mention", help="handle an @kimi-bot mention (from Actions event env)")
+    sub.add_parser("mention", help="handle an @kimi-code-bot mention (from Actions event env)")
 
     return p
 

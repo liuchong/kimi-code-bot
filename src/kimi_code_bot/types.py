@@ -1,4 +1,4 @@
-"""Shared types for kimi-bot. All modules import from here — keep this file dependency-free."""
+"""Shared types for kimi-code-bot. All modules import from here — keep this file dependency-free."""
 
 from __future__ import annotations
 

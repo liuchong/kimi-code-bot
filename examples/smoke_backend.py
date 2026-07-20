@@ -9,12 +9,12 @@ import asyncio
 import tempfile
 from pathlib import Path
 
-from kimibot.agent import KimiBackend, make_budget
-from kimibot.types import ReviewRequest
+from kimi_code_bot.agent import KimiBackend, make_budget
+from kimi_code_bot.types import ReviewRequest
 
 
 async def main() -> None:
-    work = Path(tempfile.mkdtemp(prefix="kimibot-smoke-"))
+    work = Path(tempfile.mkdtemp(prefix="kimi_code_bot-smoke-"))
     (work / "app.py").write_text(
         'def add(a, b):\n    return a - b  # BUG: should be +\n', encoding="utf-8"
     )

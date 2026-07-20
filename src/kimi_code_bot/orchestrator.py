@@ -182,8 +182,8 @@ async def run_review(
         state_name = "failure" if high_open else "success"
         desc = f"{len(high_open)} high-severity findings" if high_open else "no blocking findings"
         try:
-            await gh.create_status(repo, pr.head_sha, "kimi-bot", "success", "review completed", pr.html_url)
-            await gh.create_status(repo, pr.head_sha, "kimi-bot-findings", state_name, desc, pr.html_url)
+            await gh.create_status(repo, pr.head_sha, "kimi-code-bot", "success", "review completed", pr.html_url)
+            await gh.create_status(repo, pr.head_sha, "kimi-code-bot-findings", state_name, desc, pr.html_url)
         except Exception as e:  # noqa: BLE001
             logger.warning("status checks failed (non-fatal): %s", e)
 

@@ -1,6 +1,6 @@
 """Configuration loading.
 
-Merge priority: environment variables > .github/kimi-bot.toml (workspace root) > defaults.
+Merge priority: environment variables > .github/kimi-code-bot.toml (workspace root) > defaults.
 LLM credentials are NOT managed here — they belong to kimi-cli (env vars like
 KIMI_API_KEY / KIMI_BASE_URL / KIMI_MODEL_NAME, `kimi login`, or ~/.kimi/config.toml).
 """
@@ -12,7 +12,7 @@ import tomllib
 from dataclasses import dataclass, field
 from pathlib import Path
 
-CONFIG_PATH = ".github/kimi-bot.toml"
+CONFIG_PATH = ".github/kimi-code-bot.toml"
 
 
 class ConfigError(Exception):

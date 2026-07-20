@@ -1,4 +1,4 @@
-name: kimi-bot
+name: kimi-code-bot
 description: AI code review powered by kimi-cli
 author: liuchong
 branding:
@@ -14,11 +14,11 @@ inputs:
     required: false
     default: ""
   version:
-    description: kimi-bot version to install (PyPI version; empty = latest)
+    description: kimi-code-bot version to install (PyPI version; empty = latest)
     required: false
     default: ""
   git-ref:
-    description: install from git instead of PyPI (branch/tag/sha of liuchong/kimi-bot)
+    description: install from git instead of PyPI (branch/tag/sha of liuchong/kimi-code-bot)
     required: false
     default: ""
 
@@ -28,15 +28,15 @@ runs:
     - name: Setup uv
       uses: astral-sh/setup-uv@v6
 
-    - name: Install kimi-bot
+    - name: Install kimi-code-bot
       shell: bash
       run: |
         if [ -n "${{ inputs.git-ref }}" ]; then
-          uv tool install "git+https://github.com/liuchong/kimi-bot.git@${{ inputs.git-ref }}"
+          uv tool install "git+https://github.com/liuchong/kimi-code-bot.git@${{ inputs.git-ref }}"
         elif [ -n "${{ inputs.version }}" ]; then
-          uv tool install "kimi-bot==${{ inputs.version }}"
+          uv tool install "kimi-code-bot==${{ inputs.version }}"
         else
-          uv tool install kimi-bot
+          uv tool install kimi-code-bot
         fi
 
     # Comment events (issue_comment / pull_request_review_comment) check out the
@@ -64,4 +64,4 @@ runs:
         GH_PAT: ${{ inputs.gh-pat }}
       run: |
         # bare invocation: dispatch on github.event_name via GITHUB_EVENT_PATH
-        kimi-bot --verbose
+        kimi-code-bot --verbose

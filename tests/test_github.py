@@ -1,4 +1,4 @@
-"""Tests for kimibot.github (httpx.MockTransport, no real requests)."""
+"""Tests for kimi_code_bot.github (httpx.MockTransport, no real requests)."""
 
 from __future__ import annotations
 
@@ -7,8 +7,8 @@ import json
 import httpx
 import pytest
 
-from kimibot.github import GitHubClient, GitHubError
-from kimibot.types import InlineComment
+from kimi_code_bot.github import GitHubClient, GitHubError
+from kimi_code_bot.types import InlineComment
 
 REPO = "octo/hello"
 API = "https://api.github.com"
@@ -214,10 +214,10 @@ async def test_create_status():
         return json_response({}, status=201)
 
     async with make_client(handler) as client:
-        await client.create_status(REPO, "sha123", "kimi-bot/review", "success", "ok")
+        await client.create_status(REPO, "sha123", "kimi-code-bot/review", "success", "ok")
     assert captured == {
         "state": "success",
-        "context": "kimi-bot/review",
+        "context": "kimi-code-bot/review",
         "description": "ok",
     }
 

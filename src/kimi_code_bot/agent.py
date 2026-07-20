@@ -28,7 +28,7 @@ REVIEWER_TOOLS = [
     "kimi_cli.tools.shell:Shell",
 ]
 
-_AGENT_DIR = ".kimi-bot"
+_AGENT_DIR = ".kimi-code-bot"
 
 _YAML_TEMPLATE = """\
 version: 1
@@ -84,7 +84,7 @@ class KimiBackend:
         from kimi_cli.session import Session  # noqa: PLC0415
 
         work_dir = Path(req.work_dir).resolve()
-        agent_name = "kimi-bot-reviewer" if req.with_tools else "kimi-bot-reformat"
+        agent_name = "kimi-code-bot-reviewer" if req.with_tools else "kimi-code-bot-reformat"
         agent_file = _prepare_agent_dir(work_dir, agent_name, req.system_prompt, req.with_tools)
 
         try:

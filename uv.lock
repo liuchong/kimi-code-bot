@@ -1239,34 +1239,6 @@ wheels = [
 ]
 
 [[package]]
-name = "kimi-bot"
-version = "0.1.0"
-source = { editable = "." }
-dependencies = [
-    { name = "httpx" },
-    { name = "jsonschema" },
-    { name = "kimi-cli" },
-]
-
-[package.optional-dependencies]
-dev = [
-    { name = "pytest" },
-    { name = "pytest-asyncio" },
-    { name = "ruff" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "httpx", specifier = ">=0.27" },
-    { name = "jsonschema", specifier = ">=4.21" },
-    { name = "kimi-cli", specifier = ">=1.49" },
-    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8" },
-    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23" },
-    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6" },
-]
-provides-extras = ["dev"]
-
-[[package]]
 name = "kimi-cli"
 version = "1.49.0"
 source = { registry = "https://pypi.org/simple" }
@@ -1305,6 +1277,34 @@ sdist = { url = "https://files.pythonhosted.org/packages/0e/3e/19f885110adcc1c1b
 wheels = [
     { url = "https://files.pythonhosted.org/packages/31/44/677c07fcefb99bf28eefed1248fddc4880801576dd5aee911c9e6492c265/kimi_cli-1.49.0-py3-none-any.whl", hash = "sha256:3a0ed632bed97f8bf05403309ea3823031051ca27264ff6d5f2b2b01bc90976e", size = 5607009, upload-time = "2026-07-16T10:25:43.163Z" },
 ]
+
+[[package]]
+name = "kimi-code-bot"
+version = "0.0.1"
+source = { editable = "." }
+dependencies = [
+    { name = "httpx" },
+    { name = "jsonschema" },
+    { name = "kimi-cli" },
+]
+
+[package.optional-dependencies]
+dev = [
+    { name = "pytest" },
+    { name = "pytest-asyncio" },
+    { name = "ruff" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "httpx", specifier = ">=0.27" },
+    { name = "jsonschema", specifier = ">=4.21" },
+    { name = "kimi-cli", specifier = ">=1.49" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.23" },
+    { name = "ruff", marker = "extra == 'dev'", specifier = ">=0.6" },
+]
+provides-extras = ["dev"]
 
 [[package]]
 name = "kosong"

@@ -1,7 +1,7 @@
 """Cross-commit state (ported from hoverstare src/state.rs).
 
 All state lives on the GitHub side (hidden markers in comments + a metadata
-comment in review bodies); kimi-bot itself persists nothing and is naturally
+comment in review bodies); kimi-code-bot itself persists nothing and is naturally
 stateless.
 """
 
@@ -12,15 +12,15 @@ import re
 
 from .types import ExistingFinding, ReviewMeta
 
-# Hidden marker inside inline comments: "<!-- kimi-bot-finding:{fp} -->"
-FINDING_MARK = "<!-- kimi-bot-finding:{fp} -->"
-_MARKER_RE = re.compile(r"<!--\s*kimi-bot-finding:([0-9a-fA-F]+)\s*-->")
+# Hidden marker inside inline comments: "<!-- kimi-code-bot-finding:{fp} -->"
+FINDING_MARK = "<!-- kimi-code-bot-finding:{fp} -->"
+_MARKER_RE = re.compile(r"<!--\s*kimi-code-bot-finding:([0-9a-fA-F]+)\s*-->")
 
 # Metadata comment in review bodies:
-# <!-- kimi-bot-meta mode=... head_sha=... files_reviewed=... finding: fp1 fp2 ... -->
-META_MARK = "<!-- kimi-bot-meta"
+# <!-- kimi-code-bot-meta mode=... head_sha=... files_reviewed=... finding: fp1 fp2 ... -->
+META_MARK = "<!-- kimi-code-bot-meta"
 META_MARK_RE = re.compile(
-    r"<!--\s*kimi-bot-meta"
+    r"<!--\s*kimi-code-bot-meta"
     r"\s+mode=(?P<mode>\S+)"
     r"\s+head_sha=(?P<head_sha>\S+)"
     r"\s+files_reviewed=(?P<files_reviewed>\d+)"
@@ -87,7 +87,7 @@ def render_meta(meta: ReviewMeta) -> str:
     """Render the machine-readable metadata comment for a review body."""
     fps = " ".join(meta.fingerprints)
     return (
-        f"<!-- kimi-bot-meta mode={meta.mode} head_sha={meta.head_sha}"
+        f"<!-- kimi-code-bot-meta mode={meta.mode} head_sha={meta.head_sha}"
         f" files_reviewed={meta.files_reviewed} finding: {fps} -->"
     )
 

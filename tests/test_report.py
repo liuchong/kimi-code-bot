@@ -1,6 +1,6 @@
-"""Tests for kimibot.report.
+"""Tests for kimi_code_bot.report.
 
-kimibot.diff / kimibot.state are implemented by other modules; when they are
+kimi_code_bot.diff / kimi_code_bot.state are implemented by other modules; when they are
 not present yet, minimal stubs matching their documented interfaces are
 injected so these tests stay self-contained. When the real modules land, they
 are used instead.
@@ -11,10 +11,10 @@ import types as _types
 
 
 def _ensure_parallel_module_stubs():
-    import kimibot  # noqa: F401  (package must import first)
+    import kimi_code_bot  # noqa: F401  (package must import first)
 
     try:
-        import kimibot.diff  # noqa: F401
+        import kimi_code_bot.diff  # noqa: F401
     except ImportError:
 
         def snap_line(f, line):
@@ -27,25 +27,25 @@ def _ensure_parallel_module_stubs():
         def render_diff(files):
             return "\n".join(f.path for f in files)
 
-        stub = _types.ModuleType("kimibot.diff")
+        stub = _types.ModuleType("kimi_code_bot.diff")
         stub.snap_line = snap_line
         stub.render_diff = render_diff
-        sys.modules["kimibot.diff"] = stub
+        sys.modules["kimi_code_bot.diff"] = stub
 
     try:
-        import kimibot.state  # noqa: F401
+        import kimi_code_bot.state  # noqa: F401
     except ImportError:
-        stub = _types.ModuleType("kimibot.state")
-        stub.FINDING_MARK = "<!-- kimi-bot-finding:{fp} -->"
+        stub = _types.ModuleType("kimi_code_bot.state")
+        stub.FINDING_MARK = "<!-- kimi-code-bot-finding:{fp} -->"
         stub.fingerprint = lambda *parts: "stubfp"
-        sys.modules["kimibot.state"] = stub
+        sys.modules["kimi_code_bot.state"] = stub
 
 
 _ensure_parallel_module_stubs()
 
-from kimibot import report  # noqa: E402
-from kimibot.state import FINDING_MARK  # noqa: E402
-from kimibot.types import DiffFile, DiffHunk, Finding, ReviewMeta  # noqa: E402
+from kimi_code_bot import report  # noqa: E402
+from kimi_code_bot.state import FINDING_MARK  # noqa: E402
+from kimi_code_bot.types import DiffFile, DiffHunk, Finding, ReviewMeta  # noqa: E402
 
 # ------------------------------------------------------------------ fixtures
 
@@ -172,8 +172,8 @@ def test_body_contains_meta_comment():
     body = report.render_body(
         inline=inline, cross_cutting=cross, nitpicks=nitpicks, meta=_meta(), language="en"
     )
-    assert body.startswith("## 🤖 kimi-bot Review")
-    assert "<!-- kimi-bot-meta" in body
+    assert body.startswith("## 🤖 kimi-code-bot Review")
+    assert "<!-- kimi-code-bot-meta" in body
     # meta comment is rendered by state.render_meta (machine-readable format)
     assert "head_sha=abc123" in body
     assert "mode=full" in body
@@ -201,7 +201,7 @@ def test_body_clean_verdict():
         inline=[], cross_cutting=[], nitpicks=[], meta=_meta(), language="en"
     )
     assert "✅ No defects found." in body
-    assert "<!-- kimi-bot-meta" in body
+    assert "<!-- kimi-code-bot-meta" in body
 
 
 def test_body_cross_cutting_and_nitpicks_sections():
@@ -240,7 +240,7 @@ def test_body_zh_rendering():
     )
     assert "审查范围" in body and "增量审查" in body
     assert "共 1 条行内评论、0 条跨文件/未锚定发现（阈值：medium）。" in body
-    assert "<!-- kimi-bot-meta" in body  # machine-readable, never localized
+    assert "<!-- kimi-code-bot-meta" in body  # machine-readable, never localized
     comment_body = report.render_inline(inline[0], "zh")
     assert "已吸附到最近的变更行" in comment_body
 

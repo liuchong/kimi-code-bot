@@ -1,4 +1,4 @@
-"""Tests for kimibot.event.parse_event."""
+"""Tests for kimi_code_bot.event.parse_event."""
 
 from __future__ import annotations
 
@@ -7,9 +7,9 @@ from pathlib import Path
 
 import pytest
 
-from kimibot.config import Config
-from kimibot.event import parse_event
-from kimibot.types import MentionEvent, ReviewTarget
+from kimi_code_bot.config import Config
+from kimi_code_bot.event import parse_event
+from kimi_code_bot.types import MentionEvent, ReviewTarget
 
 REPO = "octo/hello"
 

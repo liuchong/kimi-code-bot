@@ -1,6 +1,6 @@
-"""Tests for kimibot.state (cross-commit state in GitHub comments)."""
+"""Tests for kimi_code_bot.state (cross-commit state in GitHub comments)."""
 
-from kimibot.state import (
+from kimi_code_bot.state import (
     FINDING_MARK,
     META_MARK_RE,
     extract_fingerprints,
@@ -11,12 +11,12 @@ from kimibot.state import (
     render_meta,
     unresolved_fingerprints,
 )
-from kimibot.types import ReviewMeta
+from kimi_code_bot.types import ReviewMeta
 
 
 def test_finding_mark_template():
-    assert FINDING_MARK.format(fp="abc123") == "<!-- kimi-bot-finding:abc123 -->"
-    assert render_finding_mark("abc123") == "<!-- kimi-bot-finding:abc123 -->"
+    assert FINDING_MARK.format(fp="abc123") == "<!-- kimi-code-bot-finding:abc123 -->"
+    assert render_finding_mark("abc123") == "<!-- kimi-code-bot-finding:abc123 -->"
 
 
 def test_fingerprint_stable_under_line_drift_and_formatting():
@@ -37,12 +37,12 @@ def test_fingerprint_stable_under_line_drift_and_formatting():
 
 def test_extract_fingerprints():
     body = (
-        "issue description\n<!-- kimi-bot-finding:0123456789abcdef -->\n\n---\n\n"
-        "another one\n<!-- kimi-bot-finding:fedcba9876543210 -->"
+        "issue description\n<!-- kimi-code-bot-finding:0123456789abcdef -->\n\n---\n\n"
+        "another one\n<!-- kimi-code-bot-finding:fedcba9876543210 -->"
     )
     assert extract_fingerprints(body) == ["0123456789abcdef", "fedcba9876543210"]
     # invalid content is not extracted
-    assert extract_fingerprints("<!-- kimi-bot-finding:not-hex! -->") == []
+    assert extract_fingerprints("<!-- kimi-code-bot-finding:not-hex! -->") == []
     assert extract_fingerprints("no markers") == []
     assert extract_fingerprints("") == []
     # legacy hoverstare markers are NOT picked up
@@ -55,14 +55,14 @@ def test_parse_finding_marks():
             "id": 101,
             "path": "src/a.py",
             "line": 42,
-            "body": "bug here\n<!-- kimi-bot-finding:0123456789abcdef -->",
+            "body": "bug here\n<!-- kimi-code-bot-finding:0123456789abcdef -->",
         },
         {
             "id": 102,
             "path": "src/b.py",
             "original_line": 7,
-            "body": "two issues <!-- kimi-bot-finding:aaaaaaaaaaaaaaaa -->"
-            " and <!-- kimi-bot-finding:bbbbbbbbbbbbbbbb -->",
+            "body": "two issues <!-- kimi-code-bot-finding:aaaaaaaaaaaaaaaa -->"
+            " and <!-- kimi-code-bot-finding:bbbbbbbbbbbbbbbb -->",
         },
         {"id": 103, "path": "src/c.py", "line": 1, "body": "plain comment, no mark"},
         {"id": 104, "path": "src/d.py", "line": 2, "body": None},
@@ -90,7 +90,7 @@ def test_meta_round_trip():
     )
     rendered = render_meta(meta)
     assert rendered == (
-        "<!-- kimi-bot-meta mode=incremental head_sha=abc123def"
+        "<!-- kimi-code-bot-meta mode=incremental head_sha=abc123def"
         " files_reviewed=3 finding: 0123456789abcdef fedcba9876543210 -->"
     )
     parsed = parse_meta("## Review\n\nsome prose\n" + rendered + "\nmore text")
@@ -110,7 +110,7 @@ def test_meta_round_trip_empty_fingerprints():
 def test_parse_meta_none_when_absent():
     assert parse_meta("no metadata here") is None
     assert parse_meta("") is None
-    assert parse_meta("<!-- kimi-bot-meta broken -->") is None
+    assert parse_meta("<!-- kimi-code-bot-meta broken -->") is None
     assert META_MARK_RE.search("plain body") is None
 
 
@@ -120,36 +120,36 @@ def test_unresolved_fingerprints():
             "id": "T1",
             "isResolved": False,
             "comments": {"nodes": [
-                {"body": "open bug <!-- kimi-bot-finding:aaaaaaaaaaaaaaaa -->"},
+                {"body": "open bug <!-- kimi-code-bot-finding:aaaaaaaaaaaaaaaa -->"},
             ]},
         },
         {
             "id": "T2",
             "isResolved": True,
             "comments": {"nodes": [
-                {"body": "fixed bug <!-- kimi-bot-finding:bbbbbbbbbbbbbbbb -->"},
+                {"body": "fixed bug <!-- kimi-code-bot-finding:bbbbbbbbbbbbbbbb -->"},
             ]},
         },
     ]
     marks = parse_finding_marks([
         {
             "id": 1, "path": "a.py", "line": 1,
-            "body": "<!-- kimi-bot-finding:aaaaaaaaaaaaaaaa -->",
+            "body": "<!-- kimi-code-bot-finding:aaaaaaaaaaaaaaaa -->",
             "thread_id": "T1",
         },
         {
             "id": 2, "path": "b.py", "line": 2,
-            "body": "<!-- kimi-bot-finding:bbbbbbbbbbbbbbbb -->",
+            "body": "<!-- kimi-code-bot-finding:bbbbbbbbbbbbbbbb -->",
             "thread_id": "T2",
         },
         {
             "id": 3, "path": "c.py", "line": 3,
-            "body": "<!-- kimi-bot-finding:cccccccccccccccc -->",
+            "body": "<!-- kimi-code-bot-finding:cccccccccccccccc -->",
             # no thread info -> conservatively treated as unresolved
         },
         {
             "id": 4, "path": "d.py", "line": 4,
-            "body": "<!-- kimi-bot-finding:dddddddddddddddd -->",
+            "body": "<!-- kimi-code-bot-finding:dddddddddddddddd -->",
             "thread_resolved": True,
         },
     ])

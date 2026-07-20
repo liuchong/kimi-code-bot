@@ -1,4 +1,4 @@
-name: kimi-bot
+name: kimi-code-bot
 on:
   pull_request:
     types: [opened, reopened, synchronize]
