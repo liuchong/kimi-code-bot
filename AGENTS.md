@@ -37,9 +37,10 @@ leak kimi_cli types upward.
 - Review tools are **read-only** (whitelist in `agent.py:REVIEWER_TOOLS`); Shell is
   only for `git show base:file` etc. — the system prompt forbids writes.
 - Repo instructions are loaded from the **BASE branch** (head injection defense).
-- Auto-resolve of fixed threads runs **only in full-review mode** (in incremental
-  mode "not re-reported" means "out of delta scope", not "fixed"), and is deduped
-  by comment_id (same-anchor merged comments carry multiple markers).
+- Auto-resolve uses **model-verified `resolved_finding_ids` only** (the review
+  contract asks the model to verify each open finding against current code).
+  "Not re-reported" never implies "fixed" (may be out of scope). Replies are
+  deduped by comment_id (same-anchor merged comments carry multiple markers).
 - Machine-readable content (JSON schema, `<!-- kimi-bot-finding:* -->`,
   `<!-- kimi-bot-meta ... -->`) is NEVER localized.
 - Budget rule: `max_steps = max_tool_calls + 2` (wrap-up headroom).

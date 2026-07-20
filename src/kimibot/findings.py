@@ -29,6 +29,7 @@ FINDINGS_SCHEMA: dict[str, Any] = {
         # of silently normalizing into "0 findings".
         "findings": {"type": "array", "items": {"type": "object"}},
         "cross_cutting": {"type": "array", "items": {"type": "object"}},
+        "resolved_finding_ids": {"type": "array", "items": {"type": "string"}},
     },
 }
 
@@ -158,11 +159,12 @@ def _normalize_finding(obj: dict[str, Any]) -> Finding | None:
     )
 
 
-def parse_findings(text: str) -> tuple[list[Finding], list[Finding]] | None:
+def parse_findings(text: str) -> tuple[list[Finding], list[Finding], set[str]] | None:
     """Extract + validate + normalize model output.
 
-    Returns (findings, cross_cutting). Returns None on empty output, pure
-    prose, unextractable JSON, or schema violations — the caller retries.
+    Returns (findings, cross_cutting, resolved_finding_ids). Returns None on
+    empty output, pure prose, unextractable JSON, or schema violations — the
+    caller retries.
     """
     if not text or not text.strip():
         return None
@@ -178,6 +180,10 @@ def parse_findings(text: str) -> tuple[list[Finding], list[Finding]] | None:
     for key in ("findings", "cross_cutting"):
         if isinstance(data.get(key), list):
             data[key] = [v for v in data[key] if isinstance(v, dict)]
+    if isinstance(data.get("resolved_finding_ids"), list):
+        data["resolved_finding_ids"] = [
+            v for v in data["resolved_finding_ids"] if isinstance(v, str)
+        ]
 
     try:
         jsonschema.validate(data, FINDINGS_SCHEMA)
@@ -188,4 +194,7 @@ def parse_findings(text: str) -> tuple[list[Finding], list[Finding]] | None:
         items = data.get(key) or []
         return [f for f in (_normalize_finding(v) for v in items) if f is not None]
 
-    return collect("findings"), collect("cross_cutting")
+    raw_ids = data.get("resolved_finding_ids") or data.get("resolved_ids") or []
+    resolved_ids = {v.strip() for v in raw_ids if isinstance(v, str) and v.strip()}
+
+    return collect("findings"), collect("cross_cutting"), resolved_ids

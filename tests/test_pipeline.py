@@ -163,3 +163,16 @@ def test_cluster_merges_same_issue_across_lenses():
     clusters = pipeline.cluster_findings([a, b, c])
     sizes = sorted(len(c_) for c_ in clusters)
     assert sizes == [1, 2]
+
+
+@pytest.mark.asyncio
+async def test_resolved_finding_ids_are_unioned_across_lenses():
+    def handler(req):
+        ids = {"fp-a"} if req.lens == "correctness" else {"fp-b"}
+        return json.dumps({"findings": [], "cross_cutting": [], "resolved_finding_ids": sorted(ids)})
+
+    backend = FakeBackend(handler)
+    result = await pipeline.analyze(
+        backend, cfg=_cfg(passes=2), pr_title="t", files=[_files()], diff_text="d", work_dir="."
+    )
+    assert result.resolved_finding_ids == {"fp-a", "fp-b"}

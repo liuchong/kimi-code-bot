@@ -41,7 +41,8 @@ def test_parse_clean_json():
     )
     result = parse_findings(raw)
     assert result is not None
-    findings, cross = result
+    findings, cross, resolved_ids = result
+    assert resolved_ids == set()
     assert len(findings) == 1
     f = findings[0]
     assert (f.path, f.line, f.end_line, f.severity, f.title) == ("a.py", 3, 5, "high", "t")
@@ -63,7 +64,7 @@ def test_parse_tolerates_messy_fields():
     ], "cross_cutting": []}"""
     result = parse_findings(raw)
     assert result is not None
-    findings, cross = result
+    findings, cross, _ids = result
     assert cross == []
     assert [f.path for f in findings] == ["a.py", "b.py", "c.py", "e.py"]
     a, b, c, e = findings
@@ -87,20 +88,20 @@ def test_parse_severity_aliases():
         '{"path": "a", "line": 1, "severity": 5}'
         "]}"
     )
-    findings, _ = parse_findings(raw)
+    findings, _, _ids = parse_findings(raw)
     assert [f.severity for f in findings] == ["critical", "low", "medium", "medium"]
 
 
 def test_parse_accepts_file_and_bugs_aliases():
     raw = '{"bugs": [{"file": "a.py", "line": 1, "title": "t"}]}'
-    findings, cross = parse_findings(raw)
+    findings, cross, _ids = parse_findings(raw)
     assert len(findings) == 1
     assert findings[0].path == "a.py"
     assert cross == []
 
 
 def test_parse_empty_findings_is_ok():
-    findings, cross = parse_findings('{"findings": [], "cross_cutting": []}')
+    findings, cross, _ids = parse_findings('{"findings": [], "cross_cutting": []}')
     assert findings == [] and cross == []
 
 
@@ -129,6 +130,15 @@ def test_parse_fenced_with_surrounding_prose():
         ' "title": "t", "description": "d"}]}\n'
         "```\nHope this helps!"
     )
-    findings, _ = parse_findings(raw)
+    findings, _, _ids = parse_findings(raw)
     assert len(findings) == 1
     assert findings[0].line == 2
+
+
+def test_parse_resolved_finding_ids():
+    raw = (
+        '{"findings": [], "resolved_finding_ids": ["abc123", " def456 ", 42, ""]}'
+    )
+    findings, cross, ids = parse_findings(raw)
+    assert findings == [] and cross == []
+    assert ids == {"abc123", "def456"}

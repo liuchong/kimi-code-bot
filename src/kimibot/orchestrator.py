@@ -140,34 +140,29 @@ async def run_review(
             logger.error("fallback comment also failed: %s", e2)
             return 1
 
-    # --- resolve fixed threads
-    # Only meaningful in FULL mode: in incremental mode "not re-reported" just
-    # means "outside the delta scope", not "fixed". Dedupe by comment_id —
-    # same-anchor merged comments carry multiple markers but one thread.
-    if not incremental_note:
-        current_fps = set(meta.fingerprints)
-        fixed = [m for m in marks if m.fingerprint not in current_fps and not m.thread_resolved]
-        if fixed and not (inline or cross_cutting):
-            # Zero confirmed findings with open marks is almost always an analysis
-            # anomaly (unreadable workspace, model outage...). Fail open: skip
-            # resolving rather than mass-marking findings as fixed.
-            logger.warning("skipping resolve: 0 confirmed findings but %d marks would resolve", len(fixed))
-            fixed = []
-        seen_comments: set[int] = set()
-        for m in fixed:
-            if m.comment_id in seen_comments:
-                continue
-            seen_comments.add(m.comment_id)
-            ok = False
-            if m.thread_id:
-                ok = await gh.resolve_review_thread(m.thread_id)
-            if not ok:
-                try:
-                    await gh.create_reply(repo, pr_number, m.comment_id, "✅ confirmed fixed")
-                except Exception:  # noqa: BLE001
-                    logger.warning("failed to mark finding %s as fixed", m.fingerprint)
-    else:
-        fixed = []
+    # --- resolve fixed threads (model-verified only)
+    # The review contract asks the model to verify each previously reported open
+    # finding against the current code and return resolved_finding_ids. Only
+    # those are resolved — never "not re-reported" ones (they may simply be out
+    # of the review scope). Dedupe by comment_id: same-anchor merged comments
+    # carry multiple markers but share one thread.
+    fixed = [
+        m for m in marks
+        if m.fingerprint in result.resolved_finding_ids and not m.thread_resolved
+    ]
+    seen_comments: set[int] = set()
+    for m in fixed:
+        if m.comment_id in seen_comments:
+            continue
+        seen_comments.add(m.comment_id)
+        ok = False
+        if m.thread_id:
+            ok = await gh.resolve_review_thread(m.thread_id)
+        if not ok:
+            try:
+                await gh.create_reply(repo, pr_number, m.comment_id, "✅ confirmed fixed")
+            except Exception:  # noqa: BLE001
+                logger.warning("failed to mark finding %s as fixed", m.fingerprint)
 
     # --- status checks
     if cfg.status_checks:

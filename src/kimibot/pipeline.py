@@ -46,6 +46,7 @@ CLUSTER_TITLE_JACCARD = 0.5
 class AnalysisResult:
     confirmed: list[Finding] = field(default_factory=list)
     cross_cutting: list[Finding] = field(default_factory=list)
+    resolved_finding_ids: set[str] = field(default_factory=set)
     passes_run: int = 0
     stats: dict = field(default_factory=dict)
 
@@ -111,7 +112,7 @@ async def _run_pass(
     backend: ReviewBackend,
     req: ReviewRequest,
     reformat_model: str | None,
-) -> tuple[list[Finding], list[Finding]] | None:
+) -> tuple[list[Finding], list[Finding], set[str]] | None:
     """One review pass with the full fault-tolerance ladder. None => all attempts failed."""
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
@@ -196,7 +197,7 @@ async def analyze(
     budget = make_budget(cfg.max_tool_calls, cfg.timeout_secs)
     language = cfg.language
 
-    async def one_lens(lens: LensName) -> tuple[list[Finding], list[Finding]] | None:
+    async def one_lens(lens: LensName) -> tuple[list[Finding], list[Finding], set[str]] | None:
         req = ReviewRequest(
             system_prompt=prompt_mod.system_prompt(language)
             + "\n\n"
@@ -225,9 +226,11 @@ async def analyze(
 
     all_findings: list[Finding] = []
     all_cross: list[Finding] = []
-    for (items, cross), (lens, _t) in zip(results, lenses):
-        if items is None:
+    for parsed, (lens, _t) in zip(results, lenses):
+        if parsed is None:
             continue
+        items, cross, resolved_ids = parsed
+        result.resolved_finding_ids.update(resolved_ids)
         for f in items:
             f.lenses = [lens]
         for f in cross:
